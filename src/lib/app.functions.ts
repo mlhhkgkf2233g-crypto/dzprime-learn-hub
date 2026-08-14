@@ -57,10 +57,10 @@ export const getSession = createServerFn({ method: "POST" })
         user: {
           id: String(user.id),
           telegram_id: Number(user.telegram_id),
-          username: (user.username as string | null) ?? null,
-          first_name: (user.first_name as string | null) ?? null,
-          last_name: (user.last_name as string | null) ?? null,
-          photo_url: (user.photo_url as string | null) ?? null,
+          username: (user['username'] as string | null) ?? null,
+          first_name: (user['first_name'] as string | null) ?? null,
+          last_name: (user['last_name'] as string | null) ?? null,
+          photo_url: (user['photo_url'] as string | null) ?? null,
         },
         profile: p
           ? {
