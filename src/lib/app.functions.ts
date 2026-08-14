@@ -29,27 +29,57 @@ export const getSession = createServerFn({ method: "POST" })
     const { requireUser, toClientError } = await import("./session.server");
     try {
       const { db, user } = await requireUser(data.initData);
-      const { data: profile } = await db
+      const { data: rawProfile } = await db
         .from("student_profiles")
         .select(
           "id, name, school_year_id, branch_id, wilaya_id, school_years(name, slug), branches(name), wilayas(name, code)",
         )
         .eq("user_id", user.id)
         .maybeSingle();
-      let { data: settings } = await db
+      let { data: rawSettings } = await db
         .from("user_settings")
         .select("notifications_enabled, language")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (!settings) {
+      if (!rawSettings) {
         const created = await db
           .from("user_settings")
           .insert({ user_id: user.id })
           .select("notifications_enabled, language")
           .single();
-        settings = created.data;
+        rawSettings = created.data;
       }
-      return { ok: true as const, user, profile: profile ?? null, settings };
+      const one = (v: unknown): Record<string, unknown> | null =>
+        Array.isArray(v) ? ((v[0] as Record<string, unknown>) ?? null) : ((v as Record<string, unknown>) ?? null);
+      const p = rawProfile as Record<string, any> | null;
+      return {
+        ok: true as const,
+        user: {
+          id: String(user.id),
+          telegram_id: Number(user.telegram_id),
+          username: (user.username as string | null) ?? null,
+          first_name: (user.first_name as string | null) ?? null,
+          last_name: (user.last_name as string | null) ?? null,
+          photo_url: (user.photo_url as string | null) ?? null,
+        },
+        profile: p
+          ? {
+              id: String(p["id"]),
+              name: String(p["name"]),
+              school_year_id: String(p["school_year_id"]),
+              branch_id: (p["branch_id"] as string | null) ?? null,
+              wilaya_id: (p["wilaya_id"] as string | null) ?? null,
+              school_year_name: (one(p["school_years"])?.["name"] as string | null) ?? null,
+              school_year_slug: (one(p["school_years"])?.["slug"] as string | null) ?? null,
+              branch_name: (one(p["branches"])?.["name"] as string | null) ?? null,
+              wilaya_name: (one(p["wilayas"])?.["name"] as string | null) ?? null,
+            }
+          : null,
+        settings: {
+          notifications_enabled: Boolean(rawSettings?.["notifications_enabled"] ?? true),
+          language: String(rawSettings?.["language"] ?? "ar"),
+        },
+      };
     } catch (e) {
       return { ok: false as const, error: toClientError(e) };
     }
