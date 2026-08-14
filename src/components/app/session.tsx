@@ -10,9 +10,10 @@ export type Profile = {
   school_year_id: string;
   branch_id: string | null;
   wilaya_id: string | null;
-  school_years?: { name: string; slug: string } | null;
-  branches?: { name: string } | null;
-  wilayas?: { name: string; code: string } | null;
+  school_year_name: string | null;
+  school_year_slug: string | null;
+  branch_name: string | null;
+  wilaya_name: string | null;
 };
 
 export type SessionUser = {
