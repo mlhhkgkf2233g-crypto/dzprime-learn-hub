@@ -58,10 +58,10 @@ function HomeBody() {
             {profile?.school_year_name}
           </span>
           {profile?.branch_name ? (
-            <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.branches.name}</span>
+            <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.branch_name}</span>
           ) : null}
           {profile?.wilaya_name ? (
-            <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.wilayas.name}</span>
+            <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.wilaya_name}</span>
           ) : null}
         </div>
       </section>
