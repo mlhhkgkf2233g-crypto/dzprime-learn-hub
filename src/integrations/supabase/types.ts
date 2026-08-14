@@ -14,7 +14,429 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admins: {
+        Row: {
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      branches: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          position: number
+          school_year_id: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          position?: number
+          school_year_id: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+          school_year_id?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "branches_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content: {
+        Row: {
+          branch_id: string | null
+          content_type: string
+          created_at: string
+          description: string | null
+          external_url: string | null
+          file_url: string | null
+          id: string
+          is_published: boolean
+          school_year_id: string | null
+          subject_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          branch_id?: string | null
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          external_url?: string | null
+          file_url?: string | null
+          id?: string
+          is_published?: boolean
+          school_year_id?: string | null
+          subject_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string | null
+          content_type?: string
+          created_at?: string
+          description?: string | null
+          external_url?: string | null
+          file_url?: string | null
+          id?: string
+          is_published?: boolean
+          school_year_id?: string | null
+          subject_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news: {
+        Row: {
+          branch_id: string | null
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_important: boolean
+          published_at: string
+          school_year_id: string | null
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          branch_id?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_important?: boolean
+          published_at?: string
+          school_year_id?: string | null
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          branch_id?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_important?: boolean
+          published_at?: string
+          school_year_id?: string | null
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "news_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      school_years: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          position: number
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          position?: number
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          position?: number
+          slug?: string
+        }
+        Relationships: []
+      }
+      student_profiles: {
+        Row: {
+          branch_id: string | null
+          created_at: string
+          id: string
+          name: string
+          school_year_id: string
+          updated_at: string
+          user_id: string
+          wilaya_id: string | null
+        }
+        Insert: {
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          school_year_id: string
+          updated_at?: string
+          user_id: string
+          wilaya_id?: string | null
+        }
+        Update: {
+          branch_id?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          school_year_id?: string
+          updated_at?: string
+          user_id?: string
+          wilaya_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_profiles_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_profiles_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_profiles_wilaya_id_fkey"
+            columns: ["wilaya_id"]
+            isOneToOne: false
+            referencedRelation: "wilayas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subjects: {
+        Row: {
+          branch_id: string | null
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          position: number
+          school_year_id: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          branch_id?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          position?: number
+          school_year_id?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          branch_id?: string | null
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          position?: number
+          school_year_id?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subjects_branch_id_fkey"
+            columns: ["branch_id"]
+            isOneToOne: false
+            referencedRelation: "branches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subjects_school_year_id_fkey"
+            columns: ["school_year_id"]
+            isOneToOne: false
+            referencedRelation: "school_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          notifications_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: string
+          notifications_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          notifications_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          first_name: string | null
+          id: string
+          language_code: string | null
+          last_name: string | null
+          last_seen_at: string | null
+          photo_url: string | null
+          telegram_id: number | null
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          language_code?: string | null
+          last_name?: string | null
+          last_seen_at?: string | null
+          photo_url?: string | null
+          telegram_id?: number | null
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          language_code?: string | null
+          last_name?: string | null
+          last_seen_at?: string | null
+          photo_url?: string | null
+          telegram_id?: number | null
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      wilayas: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          name: string
+          name_fr: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          name: string
+          name_fr?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          name?: string
+          name_fr?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
