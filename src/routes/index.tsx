@@ -55,12 +55,12 @@ function HomeBody() {
         <h2 className="mt-1 font-display text-2xl font-extrabold silver-text">{firstName}</h2>
         <div className="mt-4 flex flex-wrap gap-2 text-xs">
           <span className="rounded-full bg-primary/15 px-3 py-1 text-accent">
-            {profile?.school_years?.name}
+            {profile?.school_year_name}
           </span>
-          {profile?.branches?.name ? (
+          {profile?.branch_name ? (
             <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.branches.name}</span>
           ) : null}
-          {profile?.wilayas?.name ? (
+          {profile?.wilaya_name ? (
             <span className="rounded-full bg-secondary/70 px-3 py-1">{profile.wilayas.name}</span>
           ) : null}
         </div>

@@ -103,9 +103,9 @@ function AccountBody() {
       {!editing ? (
         <section className="glass-card space-y-3 rounded-2xl p-5 text-sm">
           <Row label="الاسم" value={profile?.name ?? "—"} />
-          <Row label="السنة الدراسية" value={profile?.school_years?.name ?? "—"} />
-          <Row label="الشعبة" value={profile?.branches?.name ?? "—"} />
-          <Row label="الولاية" value={profile?.wilayas?.name ?? "—"} />
+          <Row label="السنة الدراسية" value={profile?.school_year_name ?? "—"} />
+          <Row label="الشعبة" value={profile?.branch_name ?? "—"} />
+          <Row label="الولاية" value={profile?.wilaya_name ?? "—"} />
           <Button className="mt-2 w-full" onClick={() => setEditing(true)}>
             تعديل المعلومات
           </Button>
