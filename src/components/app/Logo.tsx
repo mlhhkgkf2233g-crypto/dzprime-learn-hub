@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/dz-prime-logo.jpg.asset.json";
 
 /**
  * Official DZ PRIME ACADEMY logo.
- * The image file lives at public/logo.png (uploaded brand asset).
+ * Uploaded brand asset, served from the Lovable CDN.
  */
 export function Logo({ className, size = 120 }: { className?: string; size?: number }) {
   const [failed, setFailed] = useState(false);
@@ -24,7 +25,7 @@ export function Logo({ className, size = 120 }: { className?: string; size?: num
 
   return (
     <img
-      src="/logo.png"
+      src={logoAsset.url}
       alt="DZ PRIME ACADEMY"
       width={size}
       height={size}
