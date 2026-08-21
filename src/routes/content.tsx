@@ -41,22 +41,21 @@ export const Route = createFileRoute("/content")({
 });
 
 function ContentBody() {
-  const { initData } = useSession();
+  const { authenticated } = useSession();
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/content" });
   const contentFn = useServerFn(getStudyContent);
 
   const q = useQuery({
-    queryKey: ["content", initData, search.type ?? "all", search.subject ?? "all"],
+    queryKey: ["content", search.type ?? "all", search.subject ?? "all"],
     queryFn: () =>
       contentFn({
         data: {
-          initData,
           ...(search.type ? { contentType: search.type } : {}),
           ...(search.subject ? { subjectId: search.subject } : {}),
         },
       }),
-    enabled: !!initData,
+    enabled: authenticated,
   });
 
   const subjects = q.data?.subjects ?? [];

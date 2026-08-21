@@ -32,7 +32,7 @@ export const Route = createFileRoute("/onboarding")({
 });
 
 function OnboardingPage() {
-  const { loading, error, profile, initData, refresh, user } = useSession();
+  const { loading, error, profile, refresh, user, authenticated, ready } = useSession();
   const navigate = useNavigate();
   const refFn = useServerFn(getReferenceData);
   const submitFn = useServerFn(saveProfile);
@@ -67,7 +67,7 @@ function OnboardingPage() {
     if (!valid || saving) return;
     setSaving(true);
     const res = await submitFn({
-      data: { initData, name: name.trim(), school_year_id: yearId, branch_id: branchId, wilaya_id: wilayaId },
+      data: { name: name.trim(), school_year_id: yearId, branch_id: branchId, wilaya_id: wilayaId },
     });
     setSaving(false);
     if (res.ok) {

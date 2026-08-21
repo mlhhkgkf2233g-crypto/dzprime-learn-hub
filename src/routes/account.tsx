@@ -34,7 +34,7 @@ export const Route = createFileRoute("/account")({
 });
 
 function AccountBody() {
-  const { profile, user, initData, refresh } = useSession();
+  const { profile, user, refresh } = useSession();
   const refFn = useServerFn(getReferenceData);
   const submitFn = useServerFn(saveProfile);
   const reference = useQuery({ queryKey: ["reference"], queryFn: () => refFn() });
@@ -68,7 +68,7 @@ function AccountBody() {
     }
     setSaving(true);
     const res = await submitFn({
-      data: { initData, name: name.trim(), school_year_id: yearId, branch_id: branchId, wilaya_id: wilayaId },
+      data: { name: name.trim(), school_year_id: yearId, branch_id: branchId, wilaya_id: wilayaId },
     });
     setSaving(false);
     if (res.ok) {
