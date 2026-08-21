@@ -100,3 +100,44 @@ export function toClientError(e: unknown) {
     e instanceof ConfigError ? "CONFIG_REQUIRED" : e instanceof AuthError ? "TELEGRAM_AUTH_REQUIRED" : "ERROR";
   return { code, message: e instanceof Error ? e.message : "Unexpected error" };
 }
+
+/**
+ * Web (browser) identity. Verifies the Supabase Auth bearer token server-side
+ * and maps it to the existing public.users row (creating it on first sign-in).
+ * Telegram identity above is kept and remains supported.
+ */
+export async function requireWebUser(accessToken: string | null) {
+  if (!accessToken) throw new AuthError("Authentication required");
+  const db = admin();
+  const { data: authData, error: authErr } = await db.auth.getUser(accessToken);
+  if (authErr || !authData?.user) throw new AuthError("Invalid or expired session");
+  const authUser = authData.user;
+
+  const { data: existing } = await db
+    .from("users")
+    .select("*")
+    .eq("auth_user_id", authUser.id)
+    .maybeSingle();
+
+  const meta = (authUser.user_metadata ?? {}) as Record<string, unknown>;
+  const fullName = typeof meta["full_name"] === "string" ? (meta["full_name"] as string) : null;
+
+  if (existing) {
+    await db.from("users").update({ last_seen_at: new Date().toISOString() }).eq("id", existing.id);
+    return { db, user: existing as Record<string, unknown> & { id: string } };
+  }
+
+  const { data, error } = await db
+    .from("users")
+    .insert({
+      auth_user_id: authUser.id,
+      email: authUser.email ?? null,
+      first_name: fullName?.split(" ")[0] ?? null,
+      last_name: fullName?.split(" ").slice(1).join(" ") || null,
+      last_seen_at: new Date().toISOString(),
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  return { db, user: data as Record<string, unknown> & { id: string } };
+}
