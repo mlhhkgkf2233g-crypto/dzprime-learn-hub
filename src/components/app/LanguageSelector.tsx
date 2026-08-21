@@ -14,15 +14,15 @@ import { cn } from "@/lib/utils";
 /** Global language switcher: updates UI instantly, persists locally and in user_settings. */
 export function LanguageSelector({ variant = "icon" }: { variant?: "icon" | "full" }) {
   const { lang, setLang } = useI18n();
-  const { initData } = useSession();
+  const { authenticated } = useSession();
   const updateFn = useServerFn(updateSettings);
   const current = LANGS.find((l) => l.code === lang)!;
 
   function pick(next: Lang) {
     if (next === lang) return;
     setLang(next);
-    if (initData) {
-      void updateFn({ data: { initData, language: next } }).catch(() => undefined);
+    if (authenticated) {
+      void updateFn({ data: { language: next } }).catch(() => undefined);
     }
   }
 

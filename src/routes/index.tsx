@@ -28,19 +28,19 @@ function HomePage() {
 }
 
 function HomeBody() {
-  const { profile, user, initData } = useSession();
+  const { profile, user, authenticated } = useSession();
   const newsFn = useServerFn(getNewsFeed);
   const contentFn = useServerFn(getStudyContent);
 
   const news = useQuery({
-    queryKey: ["news", initData],
-    queryFn: () => newsFn({ data: { initData } }),
-    enabled: !!initData,
+    queryKey: ["news"],
+    queryFn: () => newsFn(),
+    enabled: authenticated,
   });
   const content = useQuery({
-    queryKey: ["content", initData, "all"],
-    queryFn: () => contentFn({ data: { initData } }),
-    enabled: !!initData,
+    queryKey: ["content", "all"],
+    queryFn: () => contentFn({ data: {} }),
+    enabled: authenticated,
   });
 
   const firstName = profile?.name?.split(" ")[0] || user?.first_name || "";

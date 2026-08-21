@@ -32,13 +32,13 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsBody() {
-  const { settings, initData, refresh, user } = useSession();
+  const { settings, refresh, user } = useSession();
   const updateFn = useServerFn(updateSettings);
   const [busy, setBusy] = useState(false);
 
   async function patch(payload: { notifications_enabled?: boolean; language?: "ar" | "fr" | "en" }) {
     setBusy(true);
-    const res = await updateFn({ data: { initData, ...payload } });
+    const res = await updateFn({ data: { ...payload } });
     setBusy(false);
     if (res.ok) {
       refresh();

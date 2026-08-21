@@ -24,12 +24,12 @@ export const Route = createFileRoute("/news")({
 });
 
 function NewsBody() {
-  const { initData } = useSession();
+  const { authenticated } = useSession();
   const newsFn = useServerFn(getNewsFeed);
   const q = useQuery({
-    queryKey: ["news", initData],
-    queryFn: () => newsFn({ data: { initData } }),
-    enabled: !!initData,
+    queryKey: ["news"],
+    queryFn: () => newsFn(),
+    enabled: authenticated,
   });
 
   if (q.isPending) {
