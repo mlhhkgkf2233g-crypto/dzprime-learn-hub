@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import type { Session } from "@supabase/supabase-js";
 import { getSession } from "@/lib/app.functions";
-import { initTelegram, getInitData } from "@/lib/telegram";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Profile = {
   id: string;
@@ -18,7 +19,8 @@ export type Profile = {
 
 export type SessionUser = {
   id: string;
-  telegram_id: number;
+  email: string | null;
+  telegram_id: number | null;
   username: string | null;
   first_name: string | null;
   last_name: string | null;
@@ -26,43 +28,61 @@ export type SessionUser = {
 };
 
 type SessionValue = {
-  initData: string;
+  /** true once the Supabase auth state has been resolved on the client */
   ready: boolean;
+  authenticated: boolean;
   loading: boolean;
   error: { code: string; message: string } | null;
   user: SessionUser | null;
   profile: Profile | null;
   settings: { notifications_enabled: boolean; language: string } | null;
   refresh: () => void;
+  signOut: () => Promise<void>;
 };
 
 const Ctx = createContext<SessionValue | null>(null);
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [initData, setInitData] = useState<string | null>(null);
+  const [authSession, setAuthSession] = useState<Session | null>(null);
+  const [ready, setReady] = useState(false);
   const fetchSession = useServerFn(getSession);
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    initTelegram();
-    setInitData(getInitData());
+    let active = true;
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      if (!active) return;
+      setAuthSession(s);
+      setReady(true);
+    });
+    void supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      setAuthSession(data.session);
+      setReady(true);
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
+  const userId = authSession?.user?.id ?? null;
+
   const query = useQuery({
-    queryKey: ["session", initData],
-    enabled: initData !== null && initData !== "",
-    queryFn: () => fetchSession({ data: { initData: initData! } }),
+    queryKey: ["session", userId],
+    enabled: !!userId,
+    queryFn: () => fetchSession(),
     retry: false,
     staleTime: 60_000,
   });
 
   const value: SessionValue = {
-    initData: initData ?? "",
-    ready: initData !== null,
-    loading: initData === null || (initData !== "" && query.isPending),
+    ready,
+    authenticated: !!userId,
+    loading: !ready || (!!userId && query.isPending),
     error:
-      initData === ""
-        ? { code: "TELEGRAM_AUTH_REQUIRED", message: "يجب فتح التطبيق داخل تيليغرام" }
+      !userId && ready
+        ? null
         : query.data && !query.data.ok
           ? (query.data.error ?? { code: "ERROR", message: "خطأ غير متوقع" })
           : query.error
@@ -73,6 +93,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     settings: query.data?.ok ? ((query.data.settings as never) ?? null) : null,
     refresh: () => {
       void queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    signOut: async () => {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
     },
   };
 
